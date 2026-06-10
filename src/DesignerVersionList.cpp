@@ -45,7 +45,14 @@ DesignerVersion DesignerVersionList::guessDesignerVersionFromCreatedDate(const s
     {
     case 131230781260000000:
         return DesignerVersion(path, 2, 1, 5, 0);
+    case 131437434200000000:
+        return DesignerVersion(path, 1, 12, 1, 0);
+    case 129470843600000000:
+        return DesignerVersion(path, 1, 8, 3, 0);
+    case 131254864980000000:
+        return DesignerVersion(path, 2, 2, 2, 0);
     default:
+        DebugBreak();
         return DesignerVersion(path);
     }
 
