@@ -111,6 +111,32 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
     return RegisterClassExW(&wcex);
 }
 
+// error handler
+static void ErrorCheck()
+{
+    // Retrieve the system error message for the last-error code
+
+    LPVOID lpMsgBuf;
+    DWORD dw = GetLastError();
+    if (dw != 0x0) {
+        if (FormatMessage(
+            FORMAT_MESSAGE_ALLOCATE_BUFFER |
+            FORMAT_MESSAGE_FROM_SYSTEM |
+            FORMAT_MESSAGE_IGNORE_INSERTS,
+            NULL,
+            dw,
+            MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+            (LPTSTR)&lpMsgBuf,
+            0, NULL) == 0) {
+            MessageBox(NULL, TEXT("FormatMessage failed"), TEXT("Error"), MB_OK);
+        }
+
+        MessageBox(NULL, (LPCTSTR)lpMsgBuf, TEXT("Error"), MB_OK);
+
+        LocalFree(lpMsgBuf);
+    }
+}
+
 //
 //   FUNCTION: InitInstance(HINSTANCE, int)
 //
@@ -156,6 +182,7 @@ VOID LaunchDesigner(const bool debugMode)
         }
         commandLine.append(szCommandLine);
         LaunchProcess(path, commandLine);
+        ErrorCheck();
     }
 }
 
@@ -167,6 +194,7 @@ VOID LaunchRecoveryTool()
         const auto path = mList.at(selItem).recoveryToolPath();
         // Use ShellExecute here as recovery tool needs privilege escalation
         ShellExecute(NULL, NULL, path.c_str(), NULL, NULL, SW_SHOWNORMAL);
+        ErrorCheck();
     }
 }
 
@@ -175,6 +203,7 @@ VOID UninstallDesigner()
     int selItem = (INT)SendMessage(hwList, LB_GETCURSEL, 0, 0);
     std::wstring path = mList.at(selItem).uninstallerPath();
     LaunchProcess(path);
+    ErrorCheck();
 }
 
 
@@ -184,6 +213,7 @@ VOID ShowInExplorer()
     int selItem = (INT)SendMessage(hwList, LB_GETCURSEL, 0, 0);
     std::wstring path = mList.at(selItem).directoryPath();
     ShellExecute(NULL, L"explore", path.c_str(), NULL, NULL, SW_SHOWNORMAL);
+    ErrorCheck();
 }
 
 // Message handler for dialog
