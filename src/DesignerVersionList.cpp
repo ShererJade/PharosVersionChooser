@@ -124,7 +124,7 @@ void DesignerVersionList::doSearch()
 {
     TCHAR pf[MAX_PATH];
 
-#ifdef MOSAICVERSIONCHOOSER
+#if defined(MOSAICVERSIONCHOOSER) || defined(MOSAICMANAGERVERSIONCHOOSER)
     // For Mosaic builds, search under "%ProgramFiles%\ETC\Mosaic\*" and "%ProgramFiles(x86)%\ETC\Mosaic\*"
     SHGetSpecialFolderPath(
         0,

@@ -11,6 +11,10 @@
 	static constexpr std::array exe_names = {L"pharos_express.exe", L"pharos_expert.exe"};
 #elif defined(MOSAICVERSIONCHOOSER)
 	static constexpr std::array exe_names = {L"mosaic_designer.exe"};
+#elif defined(PHAROSDIRECTORVERSIONCHOOSER)
+	static constexpr std::array exe_names = {L"pharos_director.exe"};
+#elif defined(MOSAICMANAGERVERSIONCHOOSER)
+	static constexpr std::array exe_names = {L"mosaic_manager.exe"};
 #else
 	#error Executable type not defined
 #endif

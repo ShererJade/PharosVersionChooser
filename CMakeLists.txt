@@ -68,17 +68,51 @@ target_include_directories(MosaicVersionChooser PRIVATE
 
 target_compile_definitions(MosaicVersionChooser PRIVATE MOSAICVERSIONCHOOSER)
 
+# Pharos Director target
+add_executable(PharosDirectorVersionChooser WIN32
+    src/DesignerVersionChooser.cpp
+    src/DesignerVersionList.cpp
+    resources/DesignerVersionChooser.rc
+    resources/DesignerVersionChooser.exe.manifest
+    )
+
+target_include_directories(PharosDirectorVersionChooser PRIVATE
+    src
+    resources
+    )
+
+target_compile_definitions(PharosDirectorVersionChooser PRIVATE PHAROSDIRECTORVERSIONCHOOSER)
+
+# Mosaic Manager target
+add_executable(MosaicManagerVersionChooser WIN32
+    src/DesignerVersionChooser.cpp
+    src/DesignerVersionList.cpp
+    resources/DesignerVersionChooser.rc
+    resources/DesignerVersionChooser.exe.manifest
+    )
+
+target_include_directories(MosaicManagerVersionChooser PRIVATE
+    src
+    resources
+    )
+
+target_compile_definitions(MosaicManagerVersionChooser PRIVATE MOSAICMANAGERVERSIONCHOOSER)
+
 if(MSVC)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_UNICODE -DUNICODE)
     set_target_properties(DesignerVersionChooser PROPERTIES COMPILE_FLAGS "/Zc:wchar_t")
     set_target_properties(ExpressVersionChooser PROPERTIES COMPILE_FLAGS "/Zc:wchar_t")
     set_target_properties(MosaicVersionChooser PROPERTIES COMPILE_FLAGS "/Zc:wchar_t")
+    set_target_properties(PharosDirectorVersionChooser PROPERTIES COMPILE_FLAGS "/Zc:wchar_t")
+    set_target_properties(MosaicManagerVersionChooser PROPERTIES COMPILE_FLAGS "/Zc:wchar_t")
 endif()
 
 # The ComCtl32 library modernizes UI to vista style
 target_link_libraries(DesignerVersionChooser PUBLIC Version ComCtl32)
 target_link_libraries(ExpressVersionChooser PUBLIC Version ComCtl32)
 target_link_libraries(MosaicVersionChooser PUBLIC Version ComCtl32)
+target_link_libraries(PharosDirectorVersionChooser PUBLIC Version ComCtl32)
+target_link_libraries(MosaicManagerVersionChooser PUBLIC Version ComCtl32)
 
 # Override the default NSIS template with our own
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/install" ${CMAKE_MODULE_PATH})

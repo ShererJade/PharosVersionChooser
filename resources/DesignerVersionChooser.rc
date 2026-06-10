@@ -34,6 +34,12 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #elif MOSAICVERSIONCHOOSER
     IDI_DESIGNERVERSIONCHOOSER  ICON                    "MosaicVersionChooser.ico"
     IDI_SMALL                   ICON                    "small.ico"
+#elif PHAROSDIRECTORVERSIONCHOOSER
+    IDI_DESIGNERVERSIONCHOOSER  ICON                    "PharosDirectorVersionChooser.ico"
+    IDI_SMALL                   ICON                    "small.ico"
+#elif MOSAICMANAGERVERSIONCHOOSER
+    IDI_DESIGNERVERSIONCHOOSER  ICON                    "MosaicManagerVersionChooser.ico"
+    IDI_SMALL                   ICON                    "small.ico"
 #else
     IDI_DESIGNERVERSIONCHOOSER  ICON                    "DesignerVersionChooser.ico"
     IDI_SMALL                   ICON                    "small.ico"
@@ -173,12 +179,16 @@ END
 
 IDD_DIALOG1 DIALOGEX 0, 0, 230, 150
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-#ifdef DESIGNERVERSIONCHOOSER
-    CAPTION "Pharos Designer Version Chooser"
+#ifdef EXPRESSVERSIONCHOOSER
+    CAPTION "Express Version Chooser"
 #elif defined(MOSAICVERSIONCHOOSER)
     CAPTION "Mosaic Designer Version Chooser"
+#elif defined(PHAROSDIRECTORVERSIONCHOOSER)
+    CAPTION "Pharos Director Version Chooser"
+#elif defined(MOSAICMANAGERVERSIONCHOOSER)
+    CAPTION "Mosaic Manager Version Chooser"
 #else
-    CAPTION "Express Version Chooser"
+    CAPTION "Pharos Designer Version Chooser"
 #endif
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
