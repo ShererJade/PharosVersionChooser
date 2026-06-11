@@ -112,7 +112,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 }
 
 // error handler
-static void ErrorCheck()
+static void DisplayError()
 {
     // Retrieve the system error message for the last-error code
 
@@ -181,8 +181,9 @@ VOID LaunchDesigner(const bool debugMode)
             commandLine += std::wstring(L"-d ");
         }
         commandLine.append(szCommandLine);
-        LaunchProcess(path, commandLine);
-        ErrorCheck();
+        if (!LaunchProcess(path, commandLine)) {
+            DisplayError();
+        }
     }
 }
 
@@ -193,8 +194,9 @@ VOID LaunchRecoveryTool()
     {
         const auto path = mList.at(selItem).recoveryToolPath();
         // Use ShellExecute here as recovery tool needs privilege escalation
-        ShellExecute(NULL, NULL, path.c_str(), NULL, NULL, SW_SHOWNORMAL);
-        ErrorCheck();
+        if (ShellExecute(NULL, NULL, path.c_str(), NULL, NULL, SW_SHOWNORMAL) != 0) {
+            DisplayError();
+        }
     }
 }
 
@@ -202,8 +204,10 @@ VOID UninstallDesigner()
 {
     int selItem = (INT)SendMessage(hwList, LB_GETCURSEL, 0, 0);
     std::wstring path = mList.at(selItem).uninstallerPath();
-    LaunchProcess(path);
-    ErrorCheck();
+    // Use ShellExecute here as old uninstallers need privilege escalation
+    if (ShellExecute(NULL, NULL, path.c_str(), NULL, NULL, SW_SHOWNORMAL) != 0) {
+        DisplayError();
+    }
 }
 
 
@@ -212,8 +216,9 @@ VOID ShowInExplorer()
 {
     int selItem = (INT)SendMessage(hwList, LB_GETCURSEL, 0, 0);
     std::wstring path = mList.at(selItem).directoryPath();
-    ShellExecute(NULL, L"explore", path.c_str(), NULL, NULL, SW_SHOWNORMAL);
-    ErrorCheck();
+    if (ShellExecute(NULL, L"explore", path.c_str(), NULL, NULL, SW_SHOWNORMAL) != 0) {
+        DisplayError();
+    }
 }
 
 // Message handler for dialog
