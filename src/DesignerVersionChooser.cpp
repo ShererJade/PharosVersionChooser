@@ -61,11 +61,32 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     freopen_s(&pConOut, "CONOUT$", "w", stdout);
 #endif
 
+    // Attempt to initialise arg list
+    LPWSTR* szArglist;
+    int nArgs;
+    int i;
+    szArglist = CommandLineToArgvW(GetCommandLineW(), &nArgs);
+
     DWORD ticksStart = GetTickCount();
+
+    // Search directories specified in arguments first
+    if (NULL != szArglist && nArgs > 1)
+    {
+        for (i = 1; i < nArgs; i++) 
+        {
+            mList.searchDirectory(std::wstring(szArglist[i]));
+        }
+    }
+
+    // Search standard install directories
     mList.doSearch();
+
     DWORD ticksEnd = GetTickCount();
 
     printf("Seach took %lu ms", ticksEnd - ticksStart);
+
+    // free memory allocated for arguments
+    LocalFree(szArglist);
 
     // Perform application initialization:
     if (!InitInstance (hInstance, nCmdShow))

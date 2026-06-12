@@ -71,6 +71,7 @@ class DesignerVersionList : public std::vector<DesignerVersion>
 {
 public:
 	DesignerVersionList();
+	void searchDirectory(std::wstring path);
 	void doSearch();
 private:
 	void searchVersions(std::wstring path, int depth = 0);
