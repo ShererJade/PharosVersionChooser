@@ -13,11 +13,14 @@
 // Search to a depth of 3 because some folks make directory structures like Pharos Controls/Designer/2.9/Designer2, etc
 #define MAX_DEPTH_TO_SEARCH 3
 
-DesignerVersion DesignerVersionList::guessDesignerVersionFromCreatedDate(const std::wstring& path)
+void DesignerVersion::guessDesignerVersionFromCreatedDate()
 {
+
+    auto exePath = this->executablePath();
+
     auto fileHandle =
         CreateFile(
-        path.c_str(),
+        exePath.c_str(),
         GENERIC_READ,
         FILE_SHARE_READ,
         NULL,
@@ -26,34 +29,50 @@ DesignerVersion DesignerVersionList::guessDesignerVersionFromCreatedDate(const s
         NULL
     );
 
-    auto exePath = path;
-
     if (fileHandle == INVALID_HANDLE_VALUE)
     {
-        return DesignerVersion(path);
+        return;
     }
 
     FILETIME creationTime;
     if (!GetFileTime(fileHandle, &creationTime, NULL, NULL))
     {
-        return DesignerVersion(path);
+        return;
     }
 
     uint64_t fileTime = (uint64_t)creationTime.dwLowDateTime | (uint64_t)creationTime.dwHighDateTime << 32 ;
 
+    // Make file time less precise, to catch Mosaic and Designer versions exported within minutes
+    fileTime /= 100000000000;
     switch(fileTime)
     {
-    case 131230781260000000:
-        return DesignerVersion(path, 2, 1, 5, 0);
-    case 131437434200000000:
-        return DesignerVersion(path, 1, 12, 1, 0);
-    case 129470843600000000:
-        return DesignerVersion(path, 1, 8, 3, 0);
-    case 131254864980000000:
-        return DesignerVersion(path, 2, 2, 2, 0);
+    case 1626106:
+        setVersion(2, 4, 4, 0);
+        break;
+    case 1312548:
+        setVersion(2, 2, 2, 0);
+        break;
+    case 1312307:
+        setVersion(2, 1, 5, 0);
+        break;
+    case 1314374:
+        setVersion(1, 12, 1, 0);
+        break;
+    case 1295253:
+        setVersion(1, 8, 4, 0);
+        break;
+    case 1294708:
+        setVersion(1, 8, 3, 0);
+        break;
+    case 1292851:
+        setVersion(1, 7, 0, 0);
+        break;
+    case 1286594:
+        setVersion(1, 5, 3, 0);
+        break;
     default:
         DebugBreak();
-        return DesignerVersion(path);
+        break;
     }
 
 }
@@ -200,9 +219,9 @@ void DesignerVersionList::searchVersions(std::wstring path, int depth)
                 std::wstring filename(data.cFileName);
                 if (std::find(exe_names.begin(), exe_names.end(), filename) != exe_names.end())
                 {
-                    std::wstring targetPath = path.substr(0, path.length() - 2) + std::wstring(L"\\") + filename;
-                    std::wcout << L"Adding " << targetPath << L"\n";
-                    m_paths.push_back(targetPath);
+                    std::wstring targetPath = path.substr(0, path.length() - 2) + std::wstring(L"\\");
+                    std::wcout << L"Adding " << targetPath << filename << L"\n";
+                    push_back(DesignerVersion(targetPath, filename));
                     break; // No need to dig further in this tree if we found one
                 }
             }
@@ -226,9 +245,9 @@ void DesignerVersionList::searchVersions(std::wstring path, int depth)
 
 void DesignerVersionList::getVersionsFromPaths()
 {
-    for (const auto &path : m_paths)
+    for (auto &version : *this)
     {
-        std::wstring exePath = path;
+        std::wstring exePath = version.executablePath();
         DWORD infoSize = GetFileVersionInfoSize(exePath.c_str(), 0);
 
         LPBYTE infoBuffer = new BYTE[infoSize];
@@ -241,7 +260,7 @@ void DesignerVersionList::getVersionsFromPaths()
         {
             // Older versions of designer do not have embedded version info
             // Use the file creation date to guess the version
-            push_back(guessDesignerVersionFromCreatedDate(path));
+            version.guessDesignerVersionFromCreatedDate();
             continue;
         }
 
@@ -255,19 +274,14 @@ void DesignerVersionList::getVersionsFromPaths()
                 VS_FIXEDFILEINFO* verInfo = (VS_FIXEDFILEINFO*)lpBuffer;
                 if (verInfo->dwSignature == 0xfeef04bd)
                 {
-                    DesignerVersion version(
-                        path,
+                    version.setVersion(
                         (verInfo->dwFileVersionMS >> 16) & 0xffff,
                         (verInfo->dwFileVersionMS >> 0) & 0xffff,
                         (verInfo->dwFileVersionLS >> 16) & 0xffff,
                         (verInfo->dwFileVersionLS >> 0) & 0xffff
                         );
-                    push_back(version);
-                    continue;
                 }
             }
         }
-
-        push_back(DesignerVersion(path));
     }
 }

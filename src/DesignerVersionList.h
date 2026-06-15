@@ -43,8 +43,8 @@ enum BuildType
 class DesignerVersion
 {
 public:
-	DesignerVersion(std::wstring path = std::wstring(), int major = 0, int minor = 0, int patch = 0, int build = 0) :
-		m_Major(major), m_Minor(minor), m_Patch(patch), m_Build(build), m_path(path) {};
+	DesignerVersion(std::wstring path = std::wstring(), std::wstring exeName = std::wstring(), int major = 0, int minor = 0, int patch = 0, int build = 0) :
+		m_Major(major), m_Minor(minor), m_Patch(patch), m_Build(build), m_exeName(exeName), m_path(path) {};
 
 	const bool operator <(const DesignerVersion& rhs) const;
 
@@ -54,10 +54,17 @@ public:
 
 	void setPath(const std::wstring& path) { m_path = path; }
 	void setExeName(const std::wstring& exeName) { m_exeName = exeName;  }
+	void setVersion(int major, int minor, int patch, int build) {
+		m_Major = major;
+		m_Minor = minor;
+		m_Patch = patch;
+		m_Build = build;
+	}
+	void guessDesignerVersionFromCreatedDate();
 	std::wstring executablePath() const { return m_path + m_exeName; }
-	std::wstring uninstallerPath() const { return m_path.substr(0, m_path.find_last_of('\\') + 1) + std::wstring(UNINSTALL_EXE_NAME); }
-	std::wstring recoveryToolPath() const { return m_path.substr(0, m_path.find_last_of('\\') + 1) + std::wstring(RECOVERY_EXE_NAME); }
-	std::wstring directoryPath() const { return m_path.substr(0, m_path.find_last_of('\\') + 1); }
+	std::wstring uninstallerPath() const { return m_path + std::wstring(UNINSTALL_EXE_NAME); }
+	std::wstring recoveryToolPath() const { return m_path + std::wstring(RECOVERY_EXE_NAME); }
+	std::wstring directoryPath() const { return m_path; }
 private:
 	int m_Major = 0;
 	int m_Minor = 0;
@@ -76,7 +83,6 @@ public:
 private:
 	void searchVersions(std::wstring path, int depth = 0);
 	void getVersionsFromPaths();
-	DesignerVersion guessDesignerVersionFromCreatedDate(const std::wstring& path);
 	std::vector<std::wstring> m_paths;
 	static std::map<uint64_t, DesignerVersion> m_versionMap;
 };
