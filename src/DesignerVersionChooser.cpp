@@ -246,7 +246,7 @@ INT_PTR CALLBACK MessageHandler(HWND hDlg, UINT message, WPARAM wParam, LPARAM l
             SetFocus(hwList);
 
             // Select the first (newest) version
-            SendMessage(hwList, LB_SETSEL, TRUE, 0);
+            SendMessage(hwList, LB_SETCURSEL, TRUE, 0);
 
             // Center the window on the screen
             const auto xWidth = GetSystemMetrics(SM_CXSCREEN);
