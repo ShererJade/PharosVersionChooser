@@ -143,12 +143,7 @@ std::wstring DesignerVersion::toString() const
 
 DesignerVersionList::DesignerVersionList()
 {
-}
 
-void DesignerVersionList::searchDirectory(std::wstring path)
-{
-    std::wstring searchPath = path + std::wstring(L"\\*");
-    searchVersions(searchPath.c_str());
 }
 
 void DesignerVersionList::doSearch()
